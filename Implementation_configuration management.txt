@@ -1,0 +1,87 @@
+STEP-1: Creation of EC2 instances
+        Launch 5 instances with ubuntu AMI, set up the security group with SSH and All traffic and select your key pair.
+        In the 5 instance one instance act as master and another 4 instances act slave or worker.
+STEP-2: connect the instances using mobaXterm or putty.
+STEP-3: Installation of ansible on master by using this commands. 
+        $sudo apt update
+        $sudo apt-get install software-properties-common
+        $sudo apt-add-repository ppa:ansible/ansible
+        $sudo apt-get upda
+        $sudo apt-get install ansible
+        Installation of phyton on hosts by using this commands
+        $sudo apt-get update
+        $sudo apt-get install python If you want check the python version then the command is 
+       “$python – version”
+STEP-4: Configure SSH access to ansible host Commands on master:
+        $ssh ubuntu@<public Ip address of host>
+
+The output of this command shows permission denied of connecting master to the slave. To connect master to the slave, we need to add the master SSH key to the slave.
+
+STEP-5: Enable keyless access to accept the connection from the master node.
+
+5.1: Go inside the SSH directory by using this command “$cd .ssh” and do “$ls”, 
+there are two files exists one is authorized_keys and another file is known_hosts.
+
+5.2: Generation of key in a system “$ssh-keygen” This command creates the unique key for the machine
+
+5.3: Do “$ls” and we can see two more files are added i.e., “id_rsa” and “id_rsa.pub”
+
+5.4: Copy the code inside the id_rsa.pub using “$cat id_rsa.pub”
+
+5.5: Now in the slave node go to SSH directory and do ls and go inside the authorized_keys using “$sudo nano authorized_ keys” and paste the code which is copied previous and save the file and exit
+
+5.6: Now we can configure SSH access in master machine using the command
+
+5.7“$ssh ubuntu@<ip_address>” by this command we can successfully login to the slave machine in master and do exit
+
+STEP-6: Creation of playbooks
+
+       We can create playbooks using .yml or .yaml extension and inside the playbook the tasks or actions are written in sequential order using YAML code
+
+6.1 Installing nginx using yaml
+
+---
+- name: nginx install & start
+  services hosts: all
+  become:
+  true tasks:
+- name: install nginx 
+  apt:
+  name: nginx 
+  state: latest
+- name: start nginx 
+  service:
+  name: nginx 
+  state: started
+
+6.2: Installing git using yaml code
+- name: Install Git on
+  hosts hosts: squad
+  become:
+  true tasks:
+- name: Install Git
+  apt:
+  name: git state:
+  present
+
+6.3: Installing Apache using yaml code
+---
+- hosts:
+  playbook1 
+  become: yes 
+  tasks:
+- name: install apache2
+  apt: name=apache2 update_cache=yes state=latest
+- name: enabled mod_rewrite
+  apache2_module: name=rewrite state=present 
+notify:
+  - restart apache2 
+  handlers:
+- name: restart apache2
+  service: name=apache2 state=restarted
+
+STEP-7: Run the playbook by using this command $ansible-playbook filename.yml
+
+Outputs:
+This page can be shown when any slave Ip address is copied and browse we get this page because
+while writing playbook we give host as all.
